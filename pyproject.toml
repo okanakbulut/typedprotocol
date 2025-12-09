@@ -1,0 +1,51 @@
+[project]
+name = "typedprotocol"
+version = "0.1.0"
+description = "Typed protocols with runtime validation and structural typing"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.12"
+dependencies = []
+authors = [
+    {name = "TypedProtocol Contributors", email = "maintainer@example.com"}
+]
+maintainers = [
+    {name = "TypedProtocol Contributors", email = "maintainer@example.com"}
+]
+keywords = ["protocols", "typing", "runtime", "validation", "structural"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Quality Assurance",
+    "Typing :: Typed",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/yourusername/typedprotocol"
+"Bug Reports" = "https://github.com/yourusername/typedprotocol/issues"
+"Source" = "https://github.com/yourusername/typedprotocol"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "README.md"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "--markdown-docs"
+
+[dependency-groups]
+dev = [
+    "build>=1.3.0",
+    "pytest>=9",
+    "pytest-markdown-docs>=0.5.0",
+    "twine>=6.2.0",
+]
