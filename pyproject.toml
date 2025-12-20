@@ -7,10 +7,10 @@ license = {text = "MIT"}
 requires-python = ">=3.12"
 dependencies = ["typing-extensions>=4.15.0"]
 authors = [
-    {name = "TypedProtocol Contributors", email = "maintainer@example.com"}
+    {name = "Okan Akbulut"}
 ]
 maintainers = [
-    {name = "TypedProtocol Contributors", email = "maintainer@example.com"}
+    {name = "Okan Akbulut"}
 ]
 keywords = ["protocols", "typing", "runtime", "validation", "structural"]
 classifiers = [
@@ -21,15 +21,17 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Software Development :: Quality Assurance",
     "Typing :: Typed",
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/yourusername/typedprotocol"
-"Bug Reports" = "https://github.com/yourusername/typedprotocol/issues"
-"Source" = "https://github.com/yourusername/typedprotocol"
+"Homepage" = "https://github.com/okanakbulut/typedprotocol"
+"Bug Reports" = "https://github.com/okanakbulut/typedprotocol/issues"
+"Source" = "https://github.com/okanakbulut/typedprotocol"
+"Documentation" = "https://github.com/okanakbulut/typedprotocol#readme"
 
 [build-system]
 requires = ["hatchling"]

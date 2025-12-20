@@ -31,7 +31,7 @@ from typedprotocol import TypedProtocol
 class Drawable(TypedProtocol):
     x: int
     y: int
-    
+
     def draw(self) -> None: ...
     def move(self, dx: int, dy: int) -> None: ...
 
@@ -40,15 +40,15 @@ class Circle:
     x: int
     y: int
     radius: float  # Extra fields are allowed
-    
+
     def __init__(self, x: int, y: int, radius: float):
         self.x = x
         self.y = y
         self.radius = radius
-    
+
     def draw(self) -> None:
         print(f"Drawing circle at ({self.x}, {self.y})")
-    
+
     def move(self, dx: int, dy: int) -> None:
         self.x += dx
         self.y += dy
@@ -72,10 +72,10 @@ class Container(TypedProtocol[T]):
 class StringContainer:
     def __init__(self):
         self.items = []
-    
+
     def add(self, item: str) -> None:
         self.items.append(item)
-    
+
     def get(self) -> str:
         return self.items[0] if self.items else ""
 
@@ -106,19 +106,19 @@ class SmartCircle:
     x: int
     y: int
     radius: float
-    
+
     def __init__(self, x: int, y: int, radius: float):
         self.x = x
         self.y = y
         self.radius = radius
-    
+
     def draw(self) -> None:
         print(f"Drawing at ({self.x}, {self.y})")
-    
+
     def move(self, dx: int, dy: int) -> None:
         self.x += dx
         self.y += dy
-    
+
     def to_dict(self) -> dict:
         return {"x": self.x, "y": self.y, "radius": self.radius}
 
@@ -142,15 +142,14 @@ assert issubclass(MyProcessor, AsyncProcessor)
 
 ## Key Differences from typing.Protocol
 
-| Feature | `typing.Protocol` | `TypedProtocol` |
-|---------|------------------|------------------|
-| Type annotation enforcement | Optional | Required |
-| Runtime type checking | Basic | Enhanced |
-| Generic protocol support | Limited | With unification |
-| Instantiation prevention | No | Yes |
-| Method signature validation | Basic | Parameter/return types |
-| Protocol inheritance restrictions | None | Protocol-only inheritance |
-
+| Feature                           | `typing.Protocol` | `TypedProtocol`           |
+| --------------------------------- | ----------------- | ------------------------- |
+| Type annotation enforcement       | Optional          | Required                  |
+| Runtime type checking             | Basic             | Enhanced                  |
+| Generic protocol support          | Limited           | With unification          |
+| Instantiation prevention          | No                | Yes                       |
+| Method signature validation       | Basic             | Parameter/return types    |
+| Protocol inheritance restrictions | None              | Protocol-only inheritance |
 
 ### Required Annotations
 
@@ -184,14 +183,14 @@ assert not issubclass(BadImplementation, DataProcessor)
 - Python 3.12+
 - No external dependencies
 
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Changelog
 
-### 0.1.0 (2024-12-09)
+### 0.1.0 (2024-12-19)
+
 - Initial release
 - Core TypedProtocol implementation
 - Generic protocol support
