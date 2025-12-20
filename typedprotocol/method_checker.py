@@ -34,9 +34,9 @@ class MethodChecker:
                 protocol_annotations = getattr(protocol_method, "__annotations__", {})
 
             # Check async compatibility
-            if inspect.iscoroutinefunction(
-                actual_method
-            ) != inspect.iscoroutinefunction(protocol_method):
+            if inspect.iscoroutinefunction(actual_method) != inspect.iscoroutinefunction(
+                protocol_method
+            ):
                 return False
 
             actual_annotations = getattr(actual_method, "__annotations__", {})
@@ -48,9 +48,7 @@ class MethodChecker:
             if len(actual_params) != len(protocol_params):
                 return False
 
-            for actual_param, protocol_param in zip(
-                actual_params, protocol_params, strict=False
-            ):
+            for actual_param, protocol_param in zip(actual_params, protocol_params, strict=False):
                 if actual_param.name != protocol_param.name:
                     return False
 
@@ -96,6 +94,4 @@ class MethodChecker:
         protocol_method: typing.Callable[..., typing.Any],
     ) -> bool:
         """Check basic method compatibility without unification."""
-        return MethodChecker.are_compatible_with_unification(
-            actual_method, protocol_method, {}
-        )
+        return MethodChecker.are_compatible_with_unification(actual_method, protocol_method, {})

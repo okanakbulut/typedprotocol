@@ -1,4 +1,4 @@
 from .protocol import TypedProtocol
 
 __version__ = "0.1.0"
-__all__ = ['TypedProtocol']
+__all__ = ["TypedProtocol"]

@@ -19,9 +19,7 @@ class TypeVarSubstitutor:
         substitutions: dict[TypeVar, TypeVar] = {}
 
         if hasattr(protocol_cls, "__orig_bases__"):
-            orig_bases: tuple[typing.Any, ...] = getattr(
-                protocol_cls, "__orig_bases__", ()
-            )
+            orig_bases: tuple[typing.Any, ...] = getattr(protocol_cls, "__orig_bases__", ())
             for base in orig_bases:
                 origin = typing.get_origin(base)
                 args = typing.get_args(base)
@@ -53,15 +51,9 @@ class TypeVarSubstitutor:
             args = typing.get_args(type_annotation)
 
             if origin and args:
-                new_args = tuple(
-                    TypeVarSubstitutor.substitute(arg, substitutions) for arg in args
-                )
+                new_args = tuple(TypeVarSubstitutor.substitute(arg, substitutions) for arg in args)
                 if new_args != args:
-                    return (
-                        origin[new_args]
-                        if hasattr(origin, "__getitem__")
-                        else type_annotation
-                    )
+                    return origin[new_args] if hasattr(origin, "__getitem__") else type_annotation
 
         return type_annotation
 
@@ -84,8 +76,4 @@ class SubstitutedMethod:
             self.__qualname__: str = original_method.__qualname__
 
     def __call__(self, *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
-        return (
-            self.original_method(*args, **kwargs)
-            if callable(self.original_method)
-            else None
-        )
+        return self.original_method(*args, **kwargs) if callable(self.original_method) else None

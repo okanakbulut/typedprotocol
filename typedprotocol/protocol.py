@@ -61,10 +61,7 @@ class TypedProtocolMeta(abc.ABCMeta):
             return new_class
 
         for base in bases:
-            if (
-                hasattr(typing, "get_origin")
-                and typing.get_origin(base) is typing.Generic
-            ):
+            if hasattr(typing, "get_origin") and typing.get_origin(base) is typing.Generic:
                 continue
             if base is typing.Generic:
                 continue
@@ -100,8 +97,8 @@ class TypedProtocolMeta(abc.ABCMeta):
                 if hasattr(base, "__annotations__"):
                     for attr_name, attr_type in base.__annotations__.items():
                         if substitutions:
-                            protocol_annotations[attr_name] = (
-                                TypeVarSubstitutor.substitute(attr_type, substitutions)
+                            protocol_annotations[attr_name] = TypeVarSubstitutor.substitute(
+                                attr_type, substitutions
                             )
                         else:
                             protocol_annotations[attr_name] = attr_type
@@ -109,17 +106,11 @@ class TypedProtocolMeta(abc.ABCMeta):
                 for attr_name in dir(base):
                     if not attr_name.startswith("_"):
                         attr_value = getattr(base, attr_name)
-                        if callable(attr_value) and hasattr(
-                            attr_value, "__annotations__"
-                        ):
+                        if callable(attr_value) and hasattr(attr_value, "__annotations__"):
                             if substitutions:
-                                original_annotations = getattr(
-                                    attr_value, "__annotations__", {}
-                                )
+                                original_annotations = getattr(attr_value, "__annotations__", {})
                                 substituted_annotations = {
-                                    param: TypeVarSubstitutor.substitute(
-                                        param_type, substitutions
-                                    )
+                                    param: TypeVarSubstitutor.substitute(param_type, substitutions)
                                     for param, param_type in original_annotations.items()
                                 }
                                 protocol_methods[attr_name] = SubstitutedMethod(
@@ -146,9 +137,7 @@ class TypedProtocolMeta(abc.ABCMeta):
 
         # Check methods
         for method_name, protocol_method in protocol_methods.items():
-            if not hasattr(subclass, method_name) or not callable(
-                getattr(subclass, method_name)
-            ):
+            if not hasattr(subclass, method_name) or not callable(getattr(subclass, method_name)):
                 return False
 
             subclass_method = getattr(subclass, method_name)
