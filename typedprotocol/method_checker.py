@@ -29,15 +29,19 @@ class MethodChecker:
             if isinstance(protocol_method, SubstitutedMethod):
                 protocol_sig = inspect.signature(protocol_method.original_method)
                 protocol_annotations = getattr(protocol_method, "__annotations__", {})
+                # Check async compatibility
+                if inspect.iscoroutinefunction(actual_method) != inspect.iscoroutinefunction(
+                    protocol_method.original_method
+                ):
+                    return False
             else:
                 protocol_sig = inspect.signature(protocol_method)
                 protocol_annotations = getattr(protocol_method, "__annotations__", {})
-
-            # Check async compatibility
-            if inspect.iscoroutinefunction(actual_method) != inspect.iscoroutinefunction(
-                protocol_method
-            ):
-                return False
+                # Check async compatibility
+                if inspect.iscoroutinefunction(actual_method) != inspect.iscoroutinefunction(
+                    protocol_method
+                ):
+                    return False
 
             actual_annotations = getattr(actual_method, "__annotations__", {})
 
