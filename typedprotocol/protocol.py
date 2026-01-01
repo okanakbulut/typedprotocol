@@ -146,6 +146,25 @@ class TypedProtocolMeta(abc.ABCMeta):
             ):
                 return False
 
+        # Validate TypeVar bounds if the protocol has type parameters
+        if hasattr(cls, "__parameters__"):
+            for type_var in cls.__parameters__:
+                if type_var in type_var_mapping:
+                    bound = getattr(type_var, "__bound__", None)
+                    if bound is not None:
+                        actual_type = type_var_mapping[type_var]
+                        # Check if the actual type satisfies the bound
+                        # For protocol bounds, use isinstance check via __subclasscheck__
+                        if isinstance(bound, TypedProtocolMeta):
+                            if not isinstance(actual_type, type) or not issubclass(
+                                actual_type, bound
+                            ):
+                                return False
+                        elif inspect.isclass(bound) and (
+                            not inspect.isclass(actual_type) or not issubclass(actual_type, bound)
+                        ):
+                            return False
+
         return True
 
 

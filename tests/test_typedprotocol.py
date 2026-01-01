@@ -90,6 +90,75 @@ class TestGenericProtocols:
         assert issubclass(StringProcessor, ExtendedProtocol)
         assert not issubclass(MixedProcessor, ExtendedProtocol)
 
+    def test_generic_protocol_implementation(self):
+        type Scope = dict[str, typing.Any]
+        type Receive = typing.Callable[[], typing.Awaitable[dict[str, typing.Any]]]
+        type Send = typing.Callable[[dict[str, typing.Any]], typing.Awaitable[None]]
+
+        class Injectable(TypedProtocol):
+            @classmethod
+            async def instance(cls) -> typing.Self: ...
+
+        class HttpConnection(TypedProtocol):
+            scope: Scope
+            receive: Receive
+            send: Send
+
+        class HttpRequest(Injectable, HttpConnection):
+            pass
+
+        class HttpResponse(TypedProtocol):
+            async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None: ...
+
+        # TRequest = typing.TypeVar("TRequest", bound=HttpRequest)
+        class HttpHandler[TRequest: HttpRequest, TResponse: HttpResponse](TypedProtocol[TRequest]):
+            async def handle(self, request: TRequest) -> TResponse: ...
+
+        class MyResponse:
+            async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+                await send({
+                    "type": "http.response.start",
+                    "status": 200,
+                    "headers": [(b"content-type", b"text/plain")],
+                })
+                await send({
+                    "type": "http.response.body",
+                    "body": b"Hello, World!",
+                })
+
+        class MyRequest:
+            scope: Scope
+            receive: Receive
+            _send: Send
+
+            @classmethod
+            async def instance(cls) -> typing.Self:
+                return cls()
+
+        class CompliantHandler:
+            async def handle(self, request: MyRequest) -> MyResponse:
+                return MyResponse()
+
+        # MyRequest has _send instead of send, so it doesn't implement HttpConnection/HttpRequest
+        # Therefore CompliantHandler doesn't satisfy the HttpHandler protocol bound
+        assert not issubclass(CompliantHandler, HttpHandler)
+
+        class NewRequest:
+            scope: Scope
+            receive: Receive
+            send: Send
+
+            @classmethod
+            async def instance(cls) -> typing.Self:
+                return cls()
+
+        class NewCompliantHandler:
+            async def handle(self, request: NewRequest) -> MyResponse:
+                return MyResponse()
+
+        # NewRequest properly implements HttpRequest, so this should pass
+        assert issubclass(NewCompliantHandler, HttpHandler)
+
 
 class TestMethodParameterProtocol:
     """Test method parameter with typed protocols."""
