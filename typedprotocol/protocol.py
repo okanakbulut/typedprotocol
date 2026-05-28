@@ -15,7 +15,10 @@ from .substitution import SubstitutedMethod, TypeVarSubstitutor
 from .type_checker import TypeChecker
 
 
-class TypedProtocolMeta(abc.ABCMeta):
+_ProtocolMeta: type = type(typing.Protocol)
+
+
+class TypedProtocolMeta(_ProtocolMeta):  # type: ignore[misc]
     """Metaclass for TypedProtocol with strict type checking."""
 
     def validate_annotations(cls) -> None:
@@ -57,13 +60,13 @@ class TypedProtocolMeta(abc.ABCMeta):
         namespace["__slots__"] = ()
         new_class = super().__new__(cls, name, bases, namespace, **kwargs)
 
-        if name == "TypedProtocol" and bases == (typing.Generic,):
+        if name == "TypedProtocol":
             return new_class
 
         for base in bases:
-            if hasattr(typing, "get_origin") and typing.get_origin(base) is typing.Generic:
+            if hasattr(typing, "get_origin") and typing.get_origin(base) in (typing.Generic, typing.Protocol):
                 continue
-            if base is typing.Generic:
+            if base in (typing.Generic, typing.Protocol):
                 continue
             if base is not TypedProtocol and not isinstance(base, TypedProtocolMeta):
                 raise TypeError(
@@ -170,8 +173,10 @@ class TypedProtocolMeta(abc.ABCMeta):
 
 T = TypeVar("T", default=object)
 
+if typing.TYPE_CHECKING:
+    from typing import Protocol as TypedProtocol
+else:
+    class TypedProtocol(typing.Protocol[T], metaclass=TypedProtocolMeta):  # noqa: UP046
+        """Base class for all typed protocols."""
 
-class TypedProtocol(typing.Generic[T], metaclass=TypedProtocolMeta):  # noqa: UP046
-    """Base class for all typed protocols."""
-
-    ...
+        ...
