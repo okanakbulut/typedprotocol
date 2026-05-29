@@ -1,6 +1,5 @@
 """TypedProtocol: Strict runtime type checking for Python protocols."""
 
-import abc
 import inspect
 import sys
 import typing
@@ -14,8 +13,13 @@ from .method_checker import MethodChecker
 from .substitution import SubstitutedMethod, TypeVarSubstitutor
 from .type_checker import TypeChecker
 
+if typing.TYPE_CHECKING:
+    _ProtocolMeta = type
+else:
+    _ProtocolMeta = type(typing.Protocol)
 
-class TypedProtocolMeta(abc.ABCMeta):
+
+class TypedProtocolMeta(_ProtocolMeta):  # type: ignore[misc]
     """Metaclass for TypedProtocol with strict type checking."""
 
     def validate_annotations(cls) -> None:
@@ -57,13 +61,16 @@ class TypedProtocolMeta(abc.ABCMeta):
         namespace["__slots__"] = ()
         new_class = super().__new__(cls, name, bases, namespace, **kwargs)
 
-        if name == "TypedProtocol" and bases == (typing.Generic,):
+        if name == "TypedProtocol":
             return new_class
 
         for base in bases:
-            if hasattr(typing, "get_origin") and typing.get_origin(base) is typing.Generic:
+            if hasattr(typing, "get_origin") and typing.get_origin(base) in (
+                typing.Generic,
+                typing.Protocol,
+            ):
                 continue
-            if base is typing.Generic:
+            if base in (typing.Generic, typing.Protocol):
                 continue
             if base is not TypedProtocol and not isinstance(base, TypedProtocolMeta):
                 raise TypeError(
@@ -82,7 +89,7 @@ class TypedProtocolMeta(abc.ABCMeta):
 
     def __subclasscheck__(cls, subclass: type) -> bool:  # noqa: C901
         """Check if subclass properly implements all protocol requirements with correct types."""
-        if cls is TypedProtocol:
+        if cls is TypedProtocol:  # type: ignore[comparison-overlap]
             return super().__subclasscheck__(subclass)
 
         type_var_mapping: dict[TypeVar, typing.Any] = {}
@@ -148,7 +155,7 @@ class TypedProtocolMeta(abc.ABCMeta):
 
         # Validate TypeVar bounds if the protocol has type parameters
         if hasattr(cls, "__parameters__"):
-            for type_var in cls.__parameters__:
+            for type_var in cls.__parameters__:  # type: ignore[reportAttributeAccessIssue]
                 if type_var in type_var_mapping:
                     bound = getattr(type_var, "__bound__", None)
                     if bound is not None:
@@ -170,8 +177,11 @@ class TypedProtocolMeta(abc.ABCMeta):
 
 T = TypeVar("T", default=object)
 
+if typing.TYPE_CHECKING:
+    from typing import Protocol as TypedProtocol
+else:
 
-class TypedProtocol(typing.Generic[T], metaclass=TypedProtocolMeta):  # noqa: UP046
-    """Base class for all typed protocols."""
+    class TypedProtocol(typing.Protocol[T], metaclass=TypedProtocolMeta):
+        """Base class for all typed protocols."""
 
-    ...
+        ...

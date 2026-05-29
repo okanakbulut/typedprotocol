@@ -1,0 +1,5 @@
+{
+  "pythonVersion": "3.13",
+  "reportSelfClsParameterName": false,
+  "exclude": ["tests"]
+}
